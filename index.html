@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Flappy Bird</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { width:100%; height:100%; background:#0c0524; display:flex; align-items:center; justify-content:center; overflow:hidden; touch-action:none; }
+  #wrap { position:relative; }
+  canvas { display:block; touch-action:none; }
+  #ui { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; pointer-events:none; }
+  #ui.hidden { display:none; }
+  .obg { position:absolute; inset:0; background:rgba(8,4,20,0.80); border-radius:inherit; }
+  #ui > *:not(.obg) { position:relative; z-index:1; }
+  .ttl { font-family:'Courier New',monospace; font-size:clamp(22px,7vw,34px); font-weight:900; color:#ffe94a; text-shadow:0 0 20px #ffb300cc; text-align:center; line-height:1.35; letter-spacing:2px; }
+  .hint { font-family:'Courier New',monospace; font-size:clamp(10px,3vw,14px); color:#c4b5fd; text-align:center; line-height:2.2; letter-spacing:1px; }
+  .sc { font-family:'Courier New',monospace; font-size:clamp(17px,5vw,24px); color:#fff; font-weight:900; }
+  .bs { font-family:'Courier New',monospace; font-size:clamp(11px,3vw,14px); color:#fb923c; }
+  .got { font-family:'Courier New',monospace; font-size:clamp(20px,6vw,28px); font-weight:900; color:#ef4444; text-shadow:0 0 18px #ef444488; }
+  #btn { pointer-events:all; background:linear-gradient(135deg,#f97316,#ef4444); border:none; color:white; padding:clamp(11px,3vh,16px) clamp(26px,7vw,40px); font-family:'Courier New',monospace; font-size:clamp(12px,3.5vw,16px); font-weight:900; letter-spacing:2px; border-radius:10px; cursor:pointer; box-shadow:0 4px 0 #7f1d0e,0 0 28px #f9731666; margin-top:6px; -webkit-appearance:none; }
+  #slv { position:absolute; top:20px; left:0; right:0; text-align:center; font-family:'Courier New',monospace; font-size:clamp(28px,8vw,40px); font-weight:900; color:#ffe94a; text-shadow:0 0 16px #ffb300cc,2px 3px 0 #00000077; pointer-events:none; display:none; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="slv">0</div>
+  <div id="ready_msg" style="display:none;position:absolute;bottom:38%;left:0;right:0;text-align:center;font-family:'Courier New',monospace;font-size:clamp(12px,3.5vw,16px);font-weight:900;color:#ffe94a;text-shadow:0 0 12px #ffb300cc;letter-spacing:2px;pointer-events:none;animation:blink 0.9s infinite;">TOUCHE POUR VOLER !</div>
+  <div id="ui">
+    <div class="obg"></div>
+    <div class="ttl" id="ttl">🐦 FLAPPY<br>BIRD</div>
+    <div class="hint" id="hnt">TOUCHE L'ÉCRAN<br>pour voler</div>
+    <div class="sc" id="sc" style="display:none"></div>
+    <div class="bs" id="bs" style="display:none"></div>
+    <button id="btn">▶ JOUER</button>
+  </div>
+</div>
+<script>
+(function(){
+  const canvas=document.getElementById('c'), ctx=canvas.getContext('2d');
+  const wrap=document.getElementById('wrap'), ui=document.getElementById('ui');
+  const btn=document.getElementById('btn'), slv=document.getElementById('slv');
+  const ttlEl=document.getElementById('ttl'), hntEl=document.getElementById('hnt');
+  const scEl=document.getElementById('sc'), bsEl=document.getElementById('bs');
+  const ready_msg=document.getElementById('ready_msg');
+
+  let W,H,GH,PW,PG,PS,GR,JP,SC;
+
+  function resize(){
+    const vw=window.innerWidth, vh=window.innerHeight;
+    const ratio=9/16;
+    if(vw/vh<ratio){W=vw;H=Math.min(vh,vw/ratio);}else{H=vh;W=Math.min(vw,vh*ratio);}
+    W=Math.floor(W); H=Math.floor(H); SC=W/360;
+    GH=Math.round(70*SC); PW=Math.round(58*SC); PG=Math.round(160*SC);
+    PS=1.5*SC; GR=0.13*SC; JP=-4.5*SC;
+    PG=Math.round(210*SC);
+    canvas.width=W; canvas.height=H;
+    wrap.style.width=W+'px'; wrap.style.height=H+'px';
+    canvas.style.borderRadius=Math.round(10*SC)+'px';
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  let state='idle', bird, pipes, score, best=0, frame, ptimer, goff=0;
+
+  function resetBird(){ bird={y:H/2,vy:0,rot:0,ff:0}; }
+
+  function start(){
+    state='ready'; resetBird(); pipes=[]; score=0; frame=0; ptimer=0; goff=0;
+    ui.classList.add('hidden'); slv.style.display='block'; slv.textContent='0';
+    ready_msg.style.display='block';
+  }
+
+  function beginPlay(){
+    if(state==='ready'){ state='playing'; ready_msg.style.display='none'; flap(); }
+  }
+
+  function die(){
+    state='dead';
+    if(score>best) best=score;
+    setTimeout(()=>{
+      ui.classList.remove('hidden');
+      ttlEl.innerHTML='💥 GAME<br>OVER'; hntEl.style.display='none';
+      scEl.style.display='block'; scEl.textContent='SCORE : '+score;
+      bsEl.style.display='block'; bsEl.textContent='MEILLEUR : '+best;
+      btn.textContent='▶ REJOUER'; slv.style.display='none'; ready_msg.style.display='none';
+    },380);
+  }
+
+  function flap(){ if(state==='playing'){ bird.vy=JP; bird.ff=0; } }
+
+  btn.addEventListener('click',e=>{e.stopPropagation();start();});
+  btn.addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();start();});
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();beginPlay();flap();},{passive:false});
+  canvas.addEventListener('mousedown',e=>{beginPlay();flap();});
+  document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();beginPlay();flap();}});
+
+  function spawn(){
+    const mn=Math.round(55*SC), mx=H-GH-PG-Math.round(55*SC);
+    pipes.push({x:W+10,t:mn+Math.random()*(mx-mn),s:false});
+  }
+
+  function hit(){
+    const bx=Math.round(80*SC), r=Math.round(13*SC);
+    if(bird.y+r>=H-GH||bird.y-r<=0) return true;
+    for(const p of pipes){
+      if(bx+r>p.x+4&&bx-r<p.x+PW-4){
+        if(bird.y-r<p.t||bird.y+r>p.t+PG) return true;
+      }
+    }
+    return false;
+  }
+
+  function sky(){
+    const g=ctx.createLinearGradient(0,0,0,H-GH);
+    g.addColorStop(0,'#0c0524'); g.addColorStop(1,'#1e1060');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  }
+
+  function stars(f){
+    for(let i=0;i<45;i++){
+      const sx=(Math.sin(i*137.5)*0.5+0.5)*W;
+      const sy=(Math.cos(i*97.3)*0.5+0.5)*(H*0.62);
+      ctx.globalAlpha=0.35+0.45*Math.sin(f*0.04+i);
+      ctx.fillStyle='#fffde0';
+      ctx.beginPath(); ctx.arc(sx,sy,SC*(1+(i%3)*0.5),0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  function pipe(x,t){
+    const by=t+PG, bh=H-GH-by;
+    ctx.fillStyle='rgba(0,0,0,0.18)';
+    ctx.fillRect(x+Math.round(5*SC),0,PW,t);
+    ctx.fillRect(x+Math.round(5*SC),by,PW,bh);
+    const g=ctx.createLinearGradient(x,0,x+PW,0);
+    g.addColorStop(0,'#15803d');g.addColorStop(0.35,'#22c55e');g.addColorStop(0.65,'#22c55e');g.addColorStop(1,'#15803d');
+    ctx.fillStyle=g; ctx.fillRect(x,0,PW,t); ctx.fillRect(x,by,PW,bh);
+    const cg=ctx.createLinearGradient(x-5,0,x+PW+5,0);
+    cg.addColorStop(0,'#166534');cg.addColorStop(0.25,'#86efac');cg.addColorStop(0.55,'#22c55e');cg.addColorStop(1,'#166534');
+    ctx.fillStyle=cg;
+    const ch=Math.round(20*SC),cx=x-Math.round(5*SC),cw=PW+Math.round(10*SC);
+    ctx.beginPath();ctx.roundRect(cx,t-ch,cw,ch,[0,0,5,5]);ctx.fill();
+    ctx.beginPath();ctx.roundRect(cx,by,cw,ch,[5,5,0,0]);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.10)';
+    ctx.fillRect(x+Math.round(8*SC),0,Math.round(5*SC),t-ch);
+    ctx.fillRect(x+Math.round(8*SC),by+ch,Math.round(5*SC),bh-ch);
+  }
+
+  function ground(off){
+    ctx.fillStyle='#3b2a1a'; ctx.fillRect(0,H-GH,W,GH);
+    const tw=Math.round(36*SC);
+    for(let i=-1;i<W/tw+2;i++){
+      const gx=((i*tw-off)%(tw*2)+tw*2)%(tw*2)-tw;
+      ctx.fillStyle=i%2===0?'#3d9140':'#449947';
+      ctx.fillRect(gx,H-GH,tw,Math.round(12*SC));
+    }
+    ctx.fillStyle='rgba(0,0,0,0.12)';
+    for(let i=0;i<4;i++) ctx.fillRect(0,H-GH+Math.round((16+i*10)*SC),W,Math.round(3*SC));
+  }
+
+  function drawBird(b){
+    const bx=Math.round(80*SC), rw=Math.round(18*SC), rh=Math.round(14*SC);
+    ctx.save(); ctx.translate(bx,b.y); ctx.rotate(b.rot);
+    ctx.shadowColor='#f97316aa'; ctx.shadowBlur=Math.round(14*SC);
+    const bg=ctx.createRadialGradient(-Math.round(3*SC),-Math.round(4*SC),Math.round(2*SC),0,0,rw);
+    bg.addColorStop(0,'#ffe94a');bg.addColorStop(0.6,'#f97316');bg.addColorStop(1,'#c2410c');
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.ellipse(0,0,rw,rh,0,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+    const wa=Math.sin(b.ff*0.55)*0.65;
+    ctx.save(); ctx.rotate(wa);
+    ctx.fillStyle='#fb923c';
+    ctx.beginPath(); ctx.ellipse(-Math.round(3*SC),Math.round(5*SC),Math.round(11*SC),Math.round(6*SC),-0.3,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle='white'; ctx.beginPath(); ctx.ellipse(Math.round(8*SC),-Math.round(5*SC),Math.round(6*SC),Math.round(6*SC),0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#1e1b4b'; ctx.beginPath(); ctx.ellipse(Math.round(9.5*SC),-Math.round(5*SC),Math.round(3.5*SC),Math.round(3.5*SC),0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(Math.round(11*SC),-Math.round(6.5*SC),Math.round(1.5*SC),0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#f97316';
+    ctx.beginPath(); ctx.moveTo(Math.round(15*SC),-Math.round(2*SC)); ctx.lineTo(Math.round(25*SC),Math.round(SC)); ctx.lineTo(Math.round(15*SC),Math.round(5*SC)); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#c2410c';
+    ctx.beginPath(); ctx.moveTo(Math.round(15*SC),Math.round(SC)); ctx.lineTo(Math.round(25*SC),Math.round(SC)); ctx.lineTo(Math.round(15*SC),Math.round(5*SC)); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  function loop(){
+    requestAnimationFrame(loop);
+    frame++;
+    sky(); stars(frame);
+    if(state==='playing'){
+      goff=(goff+PS)%(Math.round(36*SC)*2);
+      bird.vy+=GR; bird.y+=bird.vy; bird.ff++;
+      bird.rot=Math.min(Math.PI/3,Math.max(-Math.PI/5,bird.vy*0.06));
+      if(++ptimer>=90){spawn();ptimer=0;}
+      pipes.forEach(p=>{
+        p.x-=PS;
+        if(!p.s&&p.x+PW<Math.round(80*SC)){p.s=true;score++;slv.textContent=score;}
+      });
+      pipes=pipes.filter(p=>p.x+PW>-10);
+      if(hit()) die();
+    } else if(state==='idle'||state==='ready'){
+      bird.y=H/2+Math.sin(frame*0.05)*Math.round(9*SC);
+    }
+    pipes.forEach(p=>pipe(p.x,p.t));
+    ground(goff);
+    drawBird(bird);
+  }
+
+  resetBird();
+  loop();
+})();
+</script>
+</body>
+</html>

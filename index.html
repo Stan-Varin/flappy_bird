@@ -57,6 +57,67 @@ input::placeholder{color:#ffffff25;}
 .go-best{font-family:'Nunito',sans-serif;font-size:clamp(12px,3vw,14px);color:#fb923c;font-weight:700;}
 .go-p2{font-family:'Nunito',sans-serif;font-size:clamp(11px,2.8vw,13px);color:#a78bfa;font-weight:700;}
 .go-medal{font-size:clamp(30px,9vw,44px);animation:pop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;}
+
+/* ── AUTH SCREEN ── */
+#authscreen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;overflow:hidden;z-index:9999;}
+#authscreen.hidden{display:none;}
+.auth-bg{position:absolute;inset:0;background:linear-gradient(160deg,#0d0420 0%,#180840 50%,#0d0420 100%);opacity:1;}
+#authscreen>*:not(.auth-bg){position:relative;z-index:1;}
+
+/* Carte centrale */
+.auth-card{background:rgba(255,255,255,0.06);border:1.5px solid rgba(167,139,250,0.3);border-radius:22px;padding:24px 22px;display:flex;flex-direction:column;align-items:center;gap:13px;width:100%;max-width:290px;backdrop-filter:blur(10px);box-shadow:0 8px 40px rgba(0,0,0,0.5);}
+
+.auth-title{font-family:'Fredoka One',cursive;font-size:clamp(26px,8vw,38px);color:#ffe94a;text-shadow:0 3px 0 #b45309,0 0 28px #ffb30099;text-align:center;line-height:1.1;margin-bottom:2px;}
+.auth-title span{color:#ff6b35;text-shadow:0 3px 0 #9a1c0c;}
+
+.auth-tab{display:flex;width:100%;border-radius:12px;overflow:hidden;background:rgba(0,0,0,0.3);padding:3px;gap:3px;}
+.auth-tab-btn{flex:1;padding:9px 0;font-family:'Fredoka One',cursive;font-size:12px;border:none;cursor:pointer;border-radius:9px;background:transparent;color:rgba(255,255,255,0.45);transition:all 0.2s;letter-spacing:0.5px;}
+.auth-tab-btn.active{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;box-shadow:0 3px 12px rgba(124,58,237,0.5);}
+
+/* Inputs spécifiques à l'auth — surcharge le style global */
+.auth-card input{
+  background:rgba(255,255,255,0.1) !important;
+  border:2px solid rgba(167,139,250,0.4) !important;
+  color:#ffffff !important;
+  padding:12px 16px !important;
+  border-radius:12px !important;
+  font-family:'Nunito',sans-serif !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  width:100% !important;
+  max-width:none !important;
+  letter-spacing:1px !important;
+  text-align:left !important;
+  outline:none !important;
+  transition:border 0.2s,background 0.2s !important;
+}
+.auth-card input:focus{border-color:#a78bfa !important;background:rgba(255,255,255,0.15) !important;}
+.auth-card input::placeholder{color:rgba(255,255,255,0.35) !important;font-weight:600 !important;}
+
+.auth-err{font-family:'Nunito',sans-serif;font-size:12px;color:#f87171;text-align:center;min-height:18px;font-weight:700;letter-spacing:0.3px;width:100%;}
+
+.btn-auth{pointer-events:all;border:none;color:#fff;padding:14px 0;font-family:'Fredoka One',cursive;font-size:16px;letter-spacing:1px;border-radius:14px;cursor:pointer;width:100%;-webkit-appearance:none;transition:transform 0.12s,filter 0.12s;background:linear-gradient(135deg,#7c3aed,#4f46e5);box-shadow:0 5px 0 #2e1065,0 0 28px rgba(124,58,237,0.45);}
+.btn-auth:active{transform:scale(0.96);filter:brightness(0.9);}
+.btn-auth.guest{background:rgba(255,255,255,0.1);box-shadow:0 4px 0 rgba(0,0,0,0.4);font-size:14px;color:rgba(255,255,255,0.8);}
+
+.auth-sep{font-family:'Nunito',sans-serif;color:rgba(255,255,255,0.25);font-size:11px;font-weight:700;letter-spacing:3px;width:100%;text-align:center;display:flex;align-items:center;gap:10px;}
+.auth-sep::before,.auth-sep::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.1);}
+
+/* ── FRIENDS PANEL ── */
+#friends-panel{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;gap:10px;padding:16px;overflow:hidden;z-index:9999;background:rgba(5,2,18,0.99);}
+#friends-panel.show{display:flex;}
+.fp-title{font-family:'Fredoka One',cursive;font-size:clamp(18px,6vw,26px);color:#c4b5fd;text-shadow:0 2px 0 #4c1d95;margin-top:8px;}
+.fp-list{width:100%;max-width:290px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:7px;}
+.fp-item{background:rgba(124,58,237,0.14);border:1.5px solid rgba(124,58,237,0.25);border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+.fp-name{font-family:'Fredoka One',cursive;font-size:14px;color:#e9d5ff;}
+.fp-score{font-family:'Nunito',sans-serif;font-size:11px;color:#a78bfa;font-weight:700;}
+.fp-empty{font-family:'Nunito',sans-serif;font-size:12px;color:#ffffff22;text-align:center;margin-top:20px;letter-spacing:1px;}
+.fp-add-row{display:flex;gap:8px;width:100%;max-width:290px;}
+.btn-fp{pointer-events:all;border:none;color:white;padding:10px 14px;font-family:'Fredoka One',cursive;font-size:13px;border-radius:11px;cursor:pointer;white-space:nowrap;-webkit-appearance:none;background:linear-gradient(135deg,#7c3aed,#4f46e5);box-shadow:0 3px 0 #2e1065;}
+.btn-fp-back{background:rgba(255,255,255,0.07);box-shadow:0 3px 0 rgba(0,0,0,0.3);width:100%;max-width:290px;padding:11px 0;font-family:'Fredoka One',cursive;font-size:14px;border:none;color:#fff;border-radius:12px;cursor:pointer;}
+.fp-msg{font-family:'Nunito',sans-serif;font-size:11px;color:#86efac;min-height:14px;text-align:center;}
+.fp-del{background:none;border:none;color:#f87171;cursor:pointer;font-size:13px;padding:2px 6px;}
+
 </style>
 </head>
 <body>
@@ -80,12 +141,14 @@ input::placeholder{color:#ffffff25;}
     <button class="btn" id="go-menu" style="max-width:220px;background:rgba(255,255,255,0.08);box-shadow:0 4px 0 rgba(0,0,0,0.3);">🏠 MENU</button>
   </div>
 
+
   <div id="lobby">
     <div class="lobby-bg"></div>
     <div class="ttl">🐦 FLAPPY<br><span>BIRD</span></div>
     <div class="lbl">TON NOM</div>
     <input id="inp-name" placeholder="Joueur 1" maxlength="12" autocomplete="off" spellcheck="false"/>
     <button class="btn btn-play" id="btn-solo">▶ JOUER EN SOLO</button>
+    <button class="btn" id="btn-friends" style="background:linear-gradient(135deg,#5b21b6,#4c1d95);box-shadow:0 4px 0 #1e0a47;font-size:14px;" onclick="openFriends()">👥 MES AMIS</button>
 
     <div class="divider">MULTIJOUEUR</div>
     <button class="btn btn-multi" id="btn-create">🎮 CRÉER UNE PARTIE</button>
@@ -102,6 +165,196 @@ input::placeholder{color:#ffffff25;}
 </div>
 
 <script>
+
+// ══════════════════════════════════════════
+//  AUTH SYSTEM
+// ══════════════════════════════════════════
+
+let currentUser = null; // {username, friends:[]}
+
+const _BIN='69adc700ae596e708f6da99b',_KEY='$2a$10$EQJ6piadmxMBMBuCGjJJMOwu3Bp5UzUNCbgfRTLwc3COjXUp6kZ36';
+
+function hashPass(s){ // simple obfuscation btoa
+  try { return btoa(unescape(encodeURIComponent(s))); } catch(e){ return btoa(s); }
+}
+
+// Charge/sauvegarde la base users dans JSONBin (champ "users" du record)
+function loadBin(cb){
+  fetch(`https://api.jsonbin.io/v3/b/${_BIN}/latest`,{
+    headers:{'X-Master-Key':_KEY}
+  }).then(r=>r.json()).then(j=>{
+    const rec = j.record;
+    const data = Array.isArray(rec) ? {scores: rec, users:[]} : (rec||{scores:[],users:[]});
+    if(!data.users) data.users=[];
+    if(!data.scores) data.scores=[];
+    cb(data);
+  }).catch(()=>cb({scores:[],users:[]}));
+}
+
+function saveBin(data, cb){
+  fetch(`https://api.jsonbin.io/v3/b/${_BIN}`,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Master-Key':_KEY},
+    body: JSON.stringify(data)
+  }).then(()=>cb&&cb()).catch(()=>cb&&cb());
+}
+
+function switchTab(tab){
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('auth-submit').textContent = tab==='login' ? 'SE CONNECTER' : 'CRÉER MON COMPTE';
+  document.getElementById('auth-submit').onclick = tab==='login' ? doLogin : doRegister;
+  document.getElementById('auth-err').textContent='';
+}
+
+function authErr(msg){ document.getElementById('auth-err').style.color='#f87171'; document.getElementById('auth-err').textContent=msg; }
+function authOk(msg){ document.getElementById('auth-err').style.color='#86efac'; document.getElementById('auth-err').textContent=msg; }
+
+function doLogin(){
+  const u = document.getElementById('auth-user').value.trim();
+  const p = document.getElementById('auth-pass').value;
+  if(!u||!p){ authErr('Remplis tous les champs !'); return; }
+  authOk('Connexion...');
+  loadBin(data=>{
+    const user = data.users.find(x=>x.username.toLowerCase()===u.toLowerCase() && x.password===hashPass(p));
+    if(!user){ authErr('Pseudo ou mot de passe incorrect ❌'); return; }
+    loginSuccess(user, data);
+  });
+}
+
+function doRegister(){
+  const u = document.getElementById('auth-user').value.trim();
+  const p = document.getElementById('auth-pass').value;
+  if(!u){ authErr('Choisis un pseudo !'); return; }
+  if(u.length < 2){ authErr('Pseudo trop court (min 2 caractères)'); return; }
+  if(!p || p.length < 3){ authErr('Mot de passe trop court (min 3 caractères)'); return; }
+  authOk('Création du compte...');
+  loadBin(data=>{
+    if(data.users.find(x=>x.username.toLowerCase()===u.toLowerCase())){
+      authErr('Ce pseudo est déjà pris ❌'); return;
+    }
+    const newUser = {username: u, password: hashPass(p), friends:[], bestScore:0, created: new Date().toISOString()};
+    data.users.push(newUser);
+    saveBin(data, ()=>{
+      authOk('Compte créé ! 🎉');
+      setTimeout(()=>loginSuccess(newUser, data), 800);
+    });
+  });
+}
+
+function loginSuccess(user, data){
+  currentUser = user;
+  localStorage.setItem('flappy_session', JSON.stringify({username: user.username, password: user.password}));
+  document.getElementById('authscreen').classList.add('hidden');
+  // Pré-remplir le nom
+  document.getElementById('inp-name').value = user.username;
+  myName = user.username;
+}
+
+function loginAsGuest(){
+  currentUser = null;
+  localStorage.removeItem('flappy_session');
+  document.getElementById('authscreen').classList.add('hidden');
+}
+
+// Vérif session sauvegardée
+function checkSession(){
+  const sess = localStorage.getItem('flappy_session');
+  if(!sess){ showAuth(); return; }
+  try {
+    const {username, password} = JSON.parse(sess);
+    loadBin(data=>{
+      const user = data.users.find(x=>x.username===username && x.password===password);
+      if(user){ loginSuccess(user, data); }
+      else { showAuth(); }
+    });
+  } catch(e){ showAuth(); }
+}
+
+function showAuth(){
+  document.getElementById('authscreen').classList.remove('hidden');
+}
+
+// ── FRIENDS ──
+function openFriends(){
+  if(!currentUser){ alert("Connecte-toi pour accéder aux amis !"); return; }
+  document.getElementById('friends-panel').classList.add('show');
+  renderFriendsList();
+}
+function closeFriends(){
+  document.getElementById('friends-panel').classList.remove('show');
+}
+
+function renderFriendsList(){
+  const list = document.getElementById('fp-list');
+  const friends = currentUser.friends || [];
+  if(friends.length===0){
+    list.innerHTML='<div class="fp-empty">Aucun ami pour l\'instant 😢<br>Ajoute des amis via leur pseudo !</div>';
+    return;
+  }
+  // Charger les scores des amis
+  loadBin(data=>{
+    list.innerHTML = friends.map(fname=>{
+      const fu = data.users.find(x=>x.username.toLowerCase()===fname.toLowerCase());
+      const score = fu ? (fu.bestScore||0) : '?';
+      return `<div class="fp-item">
+        <div>
+          <div class="fp-name">🐦 ${fname}</div>
+          <div class="fp-score">Meilleur score: ${score} pts</div>
+        </div>
+        <button class="fp-del" onclick="removeFriend('${fname}')">✕</button>
+      </div>`;
+    }).join('');
+  });
+}
+
+function addFriend(){
+  const inp = document.getElementById('fp-inp');
+  const target = inp.value.trim();
+  const msg = document.getElementById('fp-msg');
+  if(!target){ return; }
+  if(target.toLowerCase()===currentUser.username.toLowerCase()){ msg.style.color='#f87171'; msg.textContent="C'est toi-même ! 😄"; return; }
+  if(currentUser.friends.includes(target)){ msg.style.color='#f87171'; msg.textContent="Déjà dans tes amis !"; return; }
+  msg.style.color='#86efac'; msg.textContent='Recherche...';
+  loadBin(data=>{
+    const found = data.users.find(x=>x.username.toLowerCase()===target.toLowerCase());
+    if(!found){ msg.style.color='#f87171'; msg.textContent='Pseudo introuvable ❌'; return; }
+    // Ajouter ami
+    currentUser.friends = currentUser.friends||[];
+    currentUser.friends.push(found.username);
+    // Mettre à jour dans le bin
+    const idx = data.users.findIndex(x=>x.username===currentUser.username);
+    if(idx>=0) data.users[idx].friends = currentUser.friends;
+    saveBin(data, ()=>{
+      msg.style.color='#86efac'; msg.textContent=`${found.username} ajouté ! 🎉`;
+      inp.value='';
+      renderFriendsList();
+    });
+  });
+}
+
+function removeFriend(fname){
+  currentUser.friends = (currentUser.friends||[]).filter(f=>f!==fname);
+  loadBin(data=>{
+    const idx = data.users.findIndex(x=>x.username===currentUser.username);
+    if(idx>=0) data.users[idx].friends = currentUser.friends;
+    saveBin(data, ()=>renderFriendsList());
+  });
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('auth-submit').onclick = doLogin;
+  document.getElementById('auth-guest').onclick = loginAsGuest;
+  document.getElementById('auth-user').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('auth-pass').focus(); });
+  document.getElementById('auth-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('auth-submit').onclick(); });
+  document.getElementById('fp-inp').addEventListener('keydown', e=>{ if(e.key==='Enter') addFriend(); });
+  // Masquer authscreen, puis vérifier session
+  document.getElementById('authscreen').classList.add('hidden');
+  checkSession();
+});
+
+
 (function(){
 'use strict';
 
@@ -123,8 +376,8 @@ function getUUID(){
 
 // Charge tous les joueurs depuis le bin
 function loadPlayers(cb){
-  fetch(`https://api.jsonbin.io/v3/b/${DATA_CFG.BIN_ID}/latest`,{
-    headers:{'X-Master-Key':DATA_CFG.API_KEY}
+  fetch(`https://api.jsonbin.io/v3/b/${_BIN}/latest`,{
+    headers:{'X-Master-Key':_KEY}
   }).then(r=>r.json()).then(json=>{
     const data = Array.isArray(json.record) ? json.record : [];
     cb(data);
@@ -133,15 +386,24 @@ function loadPlayers(cb){
 
 // Sauvegarde tous les joueurs
 function savePlayers(players, cb){
-  fetch(`https://api.jsonbin.io/v3/b/${DATA_CFG.BIN_ID}`,{
+  fetch(`https://api.jsonbin.io/v3/b/${_BIN}`,{
     method:'PUT',
-    headers:{'Content-Type':'application/json','X-Master-Key':DATA_CFG.API_KEY},
+    headers:{'Content-Type':'application/json','X-Master-Key':_KEY},
     body: JSON.stringify(players)
   }).then(()=>cb&&cb()).catch(()=>cb&&cb());
 }
 
 // Met à jour ou crée l'entrée du joueur courant
 function trackSession(data){
+  // Mise à jour bestScore dans profil user
+  if(currentUser && data.score > (currentUser.bestScore||0)){
+    currentUser.bestScore = data.score;
+    loadBin(bd=>{
+      const idx = bd.users.findIndex(x=>x.username===currentUser.username);
+      if(idx>=0){ bd.users[idx].bestScore = data.score; saveBin(bd); }
+    });
+  }
+
   if(!DATA_CFG.enabled) return;
   const uuid = getUUID();
   const device = /Mobi/.test(navigator.userAgent)?'mobile':'desktop';
@@ -1197,5 +1459,35 @@ resetBird();
 loop();
 })();
 </script>
+  <!-- ── AUTH SCREEN ── -->
+  <div id="authscreen">
+    <div class="auth-bg"></div>
+    <div class="auth-title">🐦 FLAPPY<br><span>BIRD</span></div>
+    <div class="auth-card">
+      <div class="auth-tab">
+        <button class="auth-tab-btn active" id="tab-login" onclick="switchTab('login')">CONNEXION</button>
+        <button class="auth-tab-btn" id="tab-register" onclick="switchTab('register')">CRÉER UN COMPTE</button>
+      </div>
+      <input id="auth-user" placeholder="✏️  Pseudo" maxlength="14" autocomplete="off" spellcheck="false"/>
+      <input id="auth-pass" type="password" placeholder="🔒  Mot de passe" maxlength="32" autocomplete="off"/>
+      <div class="auth-err" id="auth-err"></div>
+      <button class="btn-auth" id="auth-submit">SE CONNECTER</button>
+      <div class="auth-sep">OU</div>
+      <button class="btn-auth guest" id="auth-guest">👤 JOUER EN INVITÉ</button>
+    </div>
+  </div>
+
+  <!-- ── FRIENDS PANEL ── -->
+  <div id="friends-panel">
+    <div class="fp-title">👥 AMIS</div>
+    <div class="fp-add-row">
+      <input id="fp-inp" placeholder="Pseudo de l'ami" maxlength="14" autocomplete="off" style="flex:1;"/>
+      <button class="btn-fp" onclick="addFriend()">+ AJOUTER</button>
+    </div>
+    <div class="fp-msg" id="fp-msg"></div>
+    <div class="fp-list" id="fp-list"></div>
+    <button class="btn-fp-back" onclick="closeFriends()">← RETOUR</button>
+  </div>
+
 </body>
 </html>
